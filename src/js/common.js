@@ -62,7 +62,7 @@ class LRUCache {
     return value;
   }
 
-  set(key, value, expireTime = 10) {
+  set(key, value, expireTime = 60) {
     if (this.#cache.has(key)) {
       this.#cache.delete(key);
     }
@@ -83,12 +83,6 @@ class Api {
     // 添加响应拦截器
     this.axios.interceptors.response.use(
       (response) => {
-        console.log("response: ", response);
-        // 2xx 范围内的状态码都会触发该函数。
-        // 对响应数据做点什么
-        if (response.request.responseURL) {
-          this.#cache.set(response.request.responseURL, response.data);
-        }
         return response;
       },
       function (error) {

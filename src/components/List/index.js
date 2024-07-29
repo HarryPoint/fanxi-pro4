@@ -9,21 +9,23 @@ const Item = (props) => {
           src="./assets/loading.gif"
           dataSrc={data.owner.avatar_url}
         />
-        <h6 className="text-lg text-center text-red-700">{data.name}</h6>
+        <h6 className="text-lg text-center text-red-700 text-nowrap text-ellipsis overflow-hidden">
+          {data.name}
+        </h6>
         <div className="p-8">
-          <div className="text-nowrap">
+          <div className="text-nowrap text-ellipsis overflow-hidden">
             <Icon type="icon-user" className="text-yellow-500 mr-1" />
             <span>{data.name}</span>
           </div>
-          <div className="">
+          <div className="text-nowrap text-ellipsis overflow-hidden">
             <Icon type="icon-star" className="text-yellow-400 mr-1" />
             <span>{data.stargazers_count} stars</span>
           </div>
-          <div className="">
+          <div className="text-nowrap text-ellipsis overflow-hidden">
             <Icon type="icon-fork" className="text-sky-600 mr-1" />
             <span>{data.forks_count} forks</span>
           </div>
-          <div>
+          <div className="text-nowrap text-ellipsis overflow-hidden">
             <Icon type="icon-error" className="text-red-700 mr-1" />
             <span>{data.open_issues} open issues</span>
           </div>
@@ -42,9 +44,6 @@ const fetchData = async ({ page, pageSize, language } = {}) => {
     order: "desc",
     type: "Repositories",
   });
-  // return await fetch(
-  //   "https://api.github.com/search/repositories?q=stars%3A%3E1&sort=stars&order=desc&type=Repositories&page=1&per_page=10"
-  // ).then((data) => data.json());
 };
 
 const List = (props) => {
@@ -83,16 +82,20 @@ const List = (props) => {
   }, []);
   return (
     <div className="container mx-auto ">
-      <div>{language}</div>
       <div className="min-h-svh">
         <div className="flex flex-wrap justify-around">
           {list.map((item, index) => (
             <Item key={`${item.id}_${index}`} data={item} index={index} />
           ))}
         </div>
+        {page === 1 && (
+          <div className="flex justify-center h-52 items-center">
+            <div className="loader"></div>
+          </div>
+        )}
       </div>
-      <div className="flex justify-center h-12 items-center">
-        <div ref={loaderRef} className="loader"></div>
+      <div ref={loaderRef} className="flex justify-center h-52 items-center">
+        <div className="loader"></div>
       </div>
     </div>
   );
