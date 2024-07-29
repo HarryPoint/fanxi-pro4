@@ -30,25 +30,27 @@ function getQueryParam(key) {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(key);
 }
-
+// https://api.github.com/search/repositories?q=stars%3A%3E1&sort=stars&order=desc&type=Repositories&page=1&per_page=10
 class Api {
-  constructor(baseURL = "https://apifoxmock.com/m1/4090542-3728567-default") {
+  constructor(baseURL = "https://api.github.com/") {
     this.axios = axios.create({
       baseURL,
     });
   }
-  async getNews({ pageSize, page }) {
+  // https://api.github.com/search/repositories?q=stars:>1&sort=stars&order=desc&type=Repositories&page=1&per_page=1
+  async getRepositories({ page, per_page, q, sort, order, type }) {
     return this.axios({
-      url: "/news",
+      url: "/search/repositories",
       params: {
-        pageSize,
         page,
+        per_page,
+        q,
+        sort,
+        order,
+        type,
       },
     });
   }
-  async getNewsDetail({ id }) {
-    return this.axios({
-      url: `/news/${id}`,
-    });
-  }
 }
+
+const api = new Api();
