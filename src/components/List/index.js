@@ -85,7 +85,7 @@ const List = (props) => {
       <div className="min-h-svh">
         <div className="flex flex-wrap justify-around">
           {list.map((item, index) => (
-            <Item key={`${item.id}_${index}`} data={item} index={index} />
+            <Item key={`${item.id}_${index}`} data={item} index={index + 1} />
           ))}
         </div>
         {page === 1 && (
