@@ -5,7 +5,7 @@ const Item = (props) => {
       <div className="bg-gray-200">
         <h5 className="text-center py-4 leading-9">#{index}</h5>
         <img
-          className="w-1/2 aspect-square mx-auto"
+          className="lazyload w-1/2 aspect-square mx-auto"
           src={data.owner.avatar_url}
         />
         <h6 className="text-lg text-center leading-9 text-red-700">
@@ -34,26 +34,65 @@ const Item = (props) => {
   );
 };
 
-const fetchData = async () => {
-  return await fetch(
-    "https://api.github.com/search/repositories?q=stars:%3E1+language:javascript&sort=stars&order=desc&type=Repositories"
-  ).then((data) => data.json());
+const fetchData = async ({ page, pageSize, language } = {}) => {
+  return api.getRepositories({
+    page: page ?? 1,
+    per_page: pageSize ?? 10,
+    q: `stars:>1${language ? ` language:${language}` : ""}`,
+    sort: "stars",
+    order: "desc",
+    type: "Repositories",
+  });
+  // return await fetch(
+  //   "https://api.github.com/search/repositories?q=stars%3A%3E1&sort=stars&order=desc&type=Repositories&page=1&per_page=10"
+  // ).then((data) => data.json());
 };
 
 const List = () => {
+  const loaderRef = React.useRef(null);
   const [list, setList] = React.useState([]);
+  const [page, setPage] = React.useState(0);
 
   React.useEffect(() => {
-    fetchData().then((data) => {
-      console.log(data);
-      setList(data.items);
+    if (page > 0) {
+      fetchData({
+        page,
+        pageSize: 10,
+        language: getQueryParam("language"),
+      }).then(({ data }) => {
+        setList([...list, ...data.items]);
+      });
+    }
+  }, [page]);
+
+  React.useEffect(() => {
+    let ob = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setPage((prevPage) => prevPage + 1);
+        }
+      });
     });
+    if (loaderRef.current) {
+      ob.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (loaderRef.current) {
+        ob.unobserve(loaderRef.current);
+      }
+    };
   }, []);
   return (
-    <div className="container mx-auto flex flex-wrap justify-around">
-      {list.map((item, index) => (
-        <Item key={item.id} data={item} index={index} />
-      ))}
+    <div className="container mx-auto ">
+      <div className="flex flex-wrap justify-around">
+        {list.map((item, index) => (
+          <Item key={item.id} data={item} index={index} />
+        ))}
+      </div>
+      <div className="flex justify-center h-12 items-center">
+        <div ref={loaderRef} className="loader"></div>
+      </div>
     </div>
   );
 };
