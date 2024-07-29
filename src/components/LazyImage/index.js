@@ -1,14 +1,41 @@
-let ob = new IntersectionObserver((entries) => {
+let ob = new IntersectionObserver(
+  (entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        setPage((prevPage) => prevPage + 1);
+        const img = entry.target;
+        ob.unobserve(img);
+        const src = img.getAttribute("data-src");
+
+        if (src) {
+          const imgDom = document.createElement("img");
+          imgDom.onload = () => {
+            img.src = src;
+          };
+          imgDom.src = src;
+        }
       }
     });
-  });
-
-  
+  },
+  {
+    threshold: 1,
+  }
+);
 
 const LazyImg = (props) => {
-    const {src} = props
-    return <img data-src={}/>
-}
+  const { src, dataSrc, className } = props;
+  const imgRef = React.useRef(null);
+  React.useEffect(() => {
+    if (imgRef.current) {
+      ob.observe(imgRef.current);
+    }
+
+    return () => {
+      if (imgRef.current) {
+        ob.unobserve(imgRef.current);
+      }
+    };
+  }, []);
+  return (
+    <img ref={imgRef} className={className} src={src} data-src={dataSrc} />
+  );
+};

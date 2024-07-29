@@ -1,18 +1,17 @@
 const Item = (props) => {
   const { index, data } = props;
   return (
-    <div className="w-1/2 md:w-1/3 lg:w-1/4 p-2">
+    <div className="w-1/2 md:w-1/3 lg:w-1/4 p-2 transition-all">
       <div className="bg-gray-200">
         <h5 className="text-center py-4 leading-9">#{index}</h5>
-        <img
-          className="lazyload w-1/2 aspect-square mx-auto"
-          src={data.owner.avatar_url}
+        <LazyImg
+          className="lazyload w-1/2 aspect-square mx-auto bg-cover bg-center"
+          src="./assets/loading.gif"
+          dataSrc={data.owner.avatar_url}
         />
-        <h6 className="text-lg text-center leading-9 text-red-700">
-          {data.name}
-        </h6>
+        <h6 className="text-lg text-center text-red-700">{data.name}</h6>
         <div className="p-8">
-          <div className="">
+          <div className="text-nowrap">
             <Icon type="icon-user" className="text-yellow-500 mr-1" />
             <span>{data.name}</span>
           </div>
@@ -51,18 +50,16 @@ const fetchData = async ({ page, pageSize, language } = {}) => {
 const List = () => {
   const loaderRef = React.useRef(null);
   const [list, setList] = React.useState([]);
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
 
   React.useEffect(() => {
-    if (page > 0) {
-      fetchData({
-        page,
-        pageSize: 10,
-        language: getQueryParam("language"),
-      }).then(({ data }) => {
-        setList([...list, ...data.items]);
-      });
-    }
+    fetchData({
+      page,
+      pageSize: 10,
+      language: getQueryParam("language"),
+    }).then(({ data }) => {
+      setList([...list, ...data.items]);
+    });
   }, [page]);
 
   React.useEffect(() => {
@@ -85,10 +82,12 @@ const List = () => {
   }, []);
   return (
     <div className="container mx-auto ">
-      <div className="flex flex-wrap justify-around">
-        {list.map((item, index) => (
-          <Item key={item.id} data={item} index={index} />
-        ))}
+      <div className="min-h-svh">
+        <div className="flex flex-wrap justify-around">
+          {list.map((item, index) => (
+            <Item key={`${item.id}_${index}`} data={item} index={index} />
+          ))}
+        </div>
       </div>
       <div className="flex justify-center h-12 items-center">
         <div ref={loaderRef} className="loader"></div>
