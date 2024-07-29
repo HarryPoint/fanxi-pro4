@@ -47,7 +47,8 @@ const fetchData = async ({ page, pageSize, language } = {}) => {
   // ).then((data) => data.json());
 };
 
-const List = () => {
+const List = (props) => {
+  const { language } = props;
   const loaderRef = React.useRef(null);
   const [list, setList] = React.useState([]);
   const [page, setPage] = React.useState(1);
@@ -56,11 +57,11 @@ const List = () => {
     fetchData({
       page,
       pageSize: 10,
-      language: getQueryParam("language"),
+      language,
     }).then(({ data }) => {
       setList([...list, ...data.items]);
     });
-  }, [page]);
+  }, [page, language]);
 
   React.useEffect(() => {
     let ob = new IntersectionObserver((entries) => {
@@ -82,6 +83,7 @@ const List = () => {
   }, []);
   return (
     <div className="container mx-auto ">
+      <div>{language}</div>
       <div className="min-h-svh">
         <div className="flex flex-wrap justify-around">
           {list.map((item, index) => (
