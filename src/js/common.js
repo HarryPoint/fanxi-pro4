@@ -87,6 +87,7 @@ class Api {
       },
       function (error) {
         console.log("error: ", error);
+        window.alert(error.message);
         return Promise.reject(error);
       }
     );
