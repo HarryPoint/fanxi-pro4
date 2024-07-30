@@ -47,25 +47,27 @@ const fetchData = async ({ page, pageSize, language } = {}) => {
 };
 
 const List = (props) => {
-  const { language } = props;
+  const { language, show } = props;
   const loaderRef = React.useRef(null);
   const [list, setList] = React.useState([]);
   const [page, setPage] = React.useState(1);
 
   React.useEffect(() => {
-    fetchData({
-      page,
-      pageSize: 10,
-      language,
-    }).then(({ data }) => {
-      setList([...list, ...data.items]);
-    });
-  }, [page, language]);
+    if (show) {
+      fetchData({
+        page,
+        pageSize: 10,
+        language,
+      }).then(({ data }) => {
+        setList([...list, ...data.items]);
+      });
+    }
+  }, [page, language, show]);
 
   React.useEffect(() => {
     let ob = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && show) {
           setPage((prevPage) => prevPage + 1);
         }
       });
@@ -79,16 +81,16 @@ const List = (props) => {
         ob.unobserve(loaderRef.current);
       }
     };
-  }, []);
+  }, [show]);
   return (
-    <div className="container mx-auto ">
+    <div className={classNames(["container", "mx-auto", { hidden: !show }])}>
       <div className="min-h-svh">
         <div className="flex flex-wrap justify-around">
           {list.map((item, index) => (
             <Item key={`${item.id}_${index}`} data={item} index={index + 1} />
           ))}
         </div>
-        {page === 1 && (
+        {page === 1 && list.length === 0 && (
           <div className="flex justify-center h-52 items-center">
             <div className="loader"></div>
           </div>

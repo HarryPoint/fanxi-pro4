@@ -19,9 +19,7 @@ function MyApp() {
         setLanguage={setLanguage}
       />
       {languages.map((item) => (
-        <div key={item} className={classNames({ hidden: language !== item })}>
-          <List language={item} />
-        </div>
+        <List key={item} language={item} show={language === item} />
       ))}
     </div>
   );
