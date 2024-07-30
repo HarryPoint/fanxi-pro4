@@ -1,11 +1,11 @@
 const Header = (props) => {
-  const { language, setLanguage } = props;
-  const items = ["all", "javascript", "ruby", "java", "css", "python"];
+  const { language, setLanguage, languages } = props;
+
   return (
     <>
       <h1 className="text-3xl lg:text-5xl text-center">github 热门项目</h1>
       <div className="container mx-auto flex justify-center gap-3">
-        {items.map((item) => (
+        {languages.map((item) => (
           <a
             key={item}
             onClick={() => setLanguage(item)}
